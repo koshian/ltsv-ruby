@@ -1,0 +1,33 @@
+#!/usr/bin/ruby
+require 'csv'
+require 'optparse'
+require 'ltsv'
+
+labels = false
+source = false
+
+ARGV.clone.options do |opts|
+  opts.banner = "Usage: #{$0} [options] file.csv"
+  opts.on('-l', '--label=label1,label2,label3...', String, 'Labels'){|v|
+    labels = v.split(',')
+  }
+  opts.on('-f', '--file=/path/to/file', String, 'Source file'){|v|
+    source = v
+  }
+  opts.on('-h', '--help', 'Show this help message.'){ $stderr.puts opts; exit }
+
+  opts.order! { |o| file ||= o } rescue retry
+end
+
+csv = source ? CSV.open(source, 'r') : CSV($stdin)
+labels = labels ? labels : csv.shift
+ltsv = LTSV.new(labels)
+
+csv.each do |r|
+  begin
+    puts ltsv.bind(r).to_s
+  rescue Errno::EPIPE
+    break
+  end
+end
+

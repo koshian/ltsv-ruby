@@ -1,0 +1,22 @@
+#!/usr/bin/ruby
+require 'ltsv'
+require 'yaml'
+require 'optparse'
+
+source = false
+ARGV.clone.options do |opts|
+  opts.banner = "Usage: #{$0} [options] file.csv"
+  opts.on('-f', '--file=/path/to/file', String, 'Source file'){|v|
+    source = v
+  }
+  opts.on('-h', '--help', 'Show this help message.'){ $stderr.puts opts; exit }
+
+  opts.order! { |o| file ||= o } rescue retry
+end
+
+io = source ? open(source, 'r') : STDIN
+
+while ltsv = io.gets
+  hash = LTSV.parse_line(ltsv.chomp)
+  puts hash.to_yaml
+end
