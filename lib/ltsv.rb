@@ -1,6 +1,9 @@
 require "ltsv/version"
 
 class LTSV
+  COLUMN_DELIMITER = "\t".freeze
+  KEY_DELIMITER = ':'.freeze
+
   attr_accessor :labels, :hashed_line
 
   def initialize(labels = @labels)
@@ -14,18 +17,18 @@ class LTSV
   end
 
   def to_s(hashed_line = @hashed_line)
-    result = Array.new
-    hashed_line.each {|k,v| result.push combine(k, v) }
-    result.join("\t")
+    [].tap {|a|
+      hashed_line.each {|k,v| a.push combine(k, v) }
+    }.join(COLUMN_DELIMITER)
   end
 
   def self.parse_line(ltsv)
-    @hashed_line = Hash.new
-    ltsv.split("\t").each do |col|
-      k,v = col.split(':')
-      @hashed_line[k] = v
-    end
-    @hashed_line
+    @hashed_line = {}.tap {|h|
+      ltsv.split(COLUMN_DELIMITER).each do |column|
+        k,v = *column.split(KEY_DELIMITER)
+        h[k.to_sym] = v
+      end
+    }
   end
 
   private
