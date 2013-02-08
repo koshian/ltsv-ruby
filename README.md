@@ -1,6 +1,7 @@
 # LTSV
 
-TODO: Write a gem description
+LTSV parser and generator
+Please see sample csv2ltsv and ltsview
 
 ## Installation
 
@@ -18,7 +19,7 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+Please see sample csv2ltsv and ltsview
 
 ## Contributing
 
